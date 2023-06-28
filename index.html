@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pokédex</title>
+  <!-- Incluir Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Pokédex</h1>
+    <form id="searchForm">
+      <div class="form-group">
+        <label for="searchType">Buscar por:</label>
+        <select class="form-control" id="searchType">
+          <option value="id">ID</option>
+          <option value="name">Nombre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="searchValue">Valor:</label>
+        <input type="text" class="form-control" id="searchValue">
+      </div>
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+    <div id="pokemonInfo"></div>
+  </div>
+
+  <!-- Incluir Bootstrap JS y jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+  <script>
+    const searchForm = document.getElementById('searchForm');
+    const pokemonInfo = document.getElementById('pokemonInfo');
+
+    searchForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const searchType = document.getElementById('searchType').value;
+      const searchValue = document.getElementById('searchValue').value;
+      const apiUrl = `https://pokeapi.co/api/v2/pokemon/${searchValue}`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => displayPokemonInfo(data))
+        .catch(error => console.log(error));
+    });
+
+    function displayPokemonInfo(pokemon) {
+      const html = `
+        <div class="card">
+          <img src="${pokemon.sprites.front_default}" class="card-img-top" alt="Sprite">
+          <div class="card-body">
+            <h5 class="card-title">${pokemon.name}</h5>
+            <p class="card-text">ID: ${pokemon.id}</p>
+            <p class="card-text">Altura: ${pokemon.height}</p>
+            <p class="card-text">Peso: ${pokemon.weight}</p>
+            <button class="btn btn-primary" onclick="showDetails('${pokemon.species.url}')">Más detalles</button>
+          </div>
+        </div>
+      `;
+
+      pokemonInfo.innerHTML = html;
+    }
+
+    function showDetails(url) {
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const html = `
+            <h5>${data.name}</h5>
+            <p>${data.flavor_text_entries[0].flavor_text}</p>
+            <!-- Otras propiedades detalladas del Pokémon -->
+          `;
+          // Aquí puedes mostrar los detalles en un modal o en una nueva página según tu preferencia
+          // Por simplicidad, lo mostraremos en una alerta
+          alert(html);
+        })
+        .catch(error => console.log(error));
+    }
+  </script>
+</body>
+</html>
